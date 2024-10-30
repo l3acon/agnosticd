@@ -92,7 +92,8 @@
       retries: 30
       delay: 10
 
-- name: Deploy Ansible Automation Platform 2 (AAP2)
+- name: Deploy Ansible Automation Platform 2.4 and below (AAP2)
+  when: ocp4_workload_ansible_automation_platform_subscription_channel != "stable-2.5"
   block:
 
     - name: Create Automation Controller
@@ -118,6 +119,39 @@
     - name: Wait for automation_controller to be running
       ansible.builtin.uri:
         url: http://{{ automation_controller_hostname }}/api/v2/ping/
+        status_code: 200
+      register: r_result
+      until: r_result.json.version is defined
+      retries: 60
+      delay: 45
+
+- name: Deploy Ansible Automation Platform 2.5 (AAP2)
+  when: ocp4_workload_ansible_automation_platform_subscription_channel == "stable-2.5"
+  block:
+
+    - name: Create Automation Controller
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'aap25.j2') }}"
+
+    - name: Retrieve created route
+      kubernetes.core.k8s_info:
+        api_version: "route.openshift.io/v1"
+        kind: Route
+        name: "{{ ocp4_workload_ansible_automation_platform_app_name }}"
+        namespace: "{{ ocp4_workload_ansible_automation_platform_project }}"
+      register: r_route
+      until: r_route.resources[0].spec.host is defined
+      retries: 30
+      delay: 45
+
+    - name: Get automation_controller route hostname
+      ansible.builtin.set_fact:
+        automation_controller_hostname: "{{ r_route.resources[0].spec.host }}"
+
+    - name: Wait for automation_controller to be running
+      ansible.builtin.uri:
+        url: http://{{ automation_controller_hostname }}/api/controller/v2/ping/
         status_code: 200
       register: r_result
       until: r_result.json.version is defined
