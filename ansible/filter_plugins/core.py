@@ -328,7 +328,7 @@ def agnosticd_filter_out_installed_collections(requirements, installed_collectio
     return requirements
 
 
-def agnosticd_filter_out_installed_collections_version_inclusive(requirements, installed_collections):
+def agnosticd_filter_collections_by_version(requirements, installed_collections):
     '''Remove collections from a requirement content that are already installed, inclusive of their version.
 
     argument collections is a dict, usually output of the command:
@@ -349,7 +349,7 @@ def agnosticd_filter_out_installed_collections_version_inclusive(requirements, i
     '''
 
     requirements = deepcopy(requirements)
-    function_name = "agnosticd_filter_out_installed_collections_version_inclusive"
+    function_name = "agnosticd_filter_collections_by_version"
 
     if not isinstance(requirements, dict):
         raise AnsibleFilterError(
@@ -380,12 +380,13 @@ def agnosticd_filter_out_installed_collections_version_inclusive(requirements, i
             # collection is not installed, keep it
             keep_collections.append(collection)
         else:
-            if collection['version'] != installed[collection['name']]
-                display.warning(
-                    "%s installed in EE but version is %s (should be %s), proceeding to update"
+            if collection['version'] != installed[collection['name']]:
+                display.debug(
+                    "%s==%s installed in EE ; should be %s==%s, proceeding to update"
                     %(collection['name'],
-                      installed[collection['name']]
                       collection['version'],
+                      collection['name'],
+                      installed[collection['name']])
                 )
                 keep_collections.append(collection)
             else:
@@ -444,6 +445,6 @@ class FilterModule(object):
             'image_to_ec2_filters': image_to_ec2_filters,
             'agnosticd_get_all_images': agnosticd_get_all_images,
             'agnosticd_filter_out_installed_collections': agnosticd_filter_out_installed_collections,
-            'agnosticd_filter_out_installed_collections_version_inclusive': agnosticd_filter_out_installed_collections_version_inclusive,
+            'agnosticd_filter_collections_by_version': agnosticd_filter_collections_by_version,
             'agnosticd_instances_to_odcr': agnosticd_instances_to_odcr,
         }
