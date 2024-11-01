@@ -18,7 +18,7 @@
     dest: "{{ tempfile_1.path }}"
     content: >-
       {{ r_requirements_content
-      | agnosticd_filter_out_installed_collections(installed_collections)
+      | agnosticd_filter_out_installed_collections_version_inclusive(installed_collections)
       | to_yaml }}
 
 - name: Install collections from requirements.yml (EE)
