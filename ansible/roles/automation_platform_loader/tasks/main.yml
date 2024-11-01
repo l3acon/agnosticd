@@ -21,7 +21,7 @@
   block:
 
     - name: Create a new AAP2 Auth token using controller username/password
-      awx.awx.token:
+      ansible.controller.token:
         description: Creating token to configure AAP2 resources
         scope: write
         state: present

@@ -170,7 +170,7 @@
         password: "{{ ocp4_workload_ansible_automation_platform_manifest.password | default(omit) }}"
 
     - name: Inject AAP2 Controller manifest
-      awx.awx.license:
+      ansible.controller.license:
         manifest: /tmp/aap-manifest.zip
         controller_host: "{{ automation_controller_hostname }}"
         controller_username: admin
