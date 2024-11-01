@@ -158,7 +158,6 @@
       retries: 60
       delay: 45
 
- breaking with 2.5
 - name: Inject AAP2 Manifest if provided
   when: ocp4_workload_ansible_automation_platform_manifest.inject | default(false) | bool
   block:
